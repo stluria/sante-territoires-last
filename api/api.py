@@ -166,7 +166,13 @@ class StatsRegion(BaseModel):
     nb_departements: int
     nb_geolocalisés: int
 
-
+class StatsDensiteType(BaseModel):
+    departement: str
+    nom_departement: Optional[str]
+    groupe: Optional[str]
+    nb_etablissements: int
+    population: int
+    etablissements_pour_100000: float
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
@@ -334,7 +340,45 @@ def get_top_activites(limit: int = Query(10, ge=1, le=50)):
 def get_departements():
     return query_db("SELECT * FROM ref_departements ORDER BY code_dept")
 
+@app.get(
+    "/stats/departements/densite-par-type",
+    response_model=list[StatsDensiteType],
+    tags=["Statistiques"],
+    summary="Densité pour 100 000 habitants par département et groupe d'établissement",
+    dependencies=[Depends(verify_api_key)],
+)
+def get_stats_densite_par_type(
+    departement: Optional[str] = Query(None, description="Filtrer par code département (ex: 31)"),
+    groupe: Optional[str] = Query(None, description="Filtrer par groupe (ex: EHPAD, Handicap...)"),
+):
+    conditions = ["1=1"]
+    params = []
 
+    if departement:
+        conditions.append("e.departement = ?")
+        params.append(departement.zfill(2))
+
+    if groupe:
+        conditions.append("e.groupe LIKE ?")
+        params.append(f"%{groupe}%")
+
+    where = " AND ".join(conditions)
+
+    sql = f"""
+        SELECT
+            e.departement,
+            e.nom_departement,
+            e.groupe,
+            COUNT(*) AS nb_etablissements,
+            p.population,
+            ROUND(COUNT(*) * 100000.0 / p.population, 2) AS etablissements_pour_100000
+        FROM etablissements e
+        JOIN pop_departements p ON e.departement = p.code_dept
+        WHERE {where}
+        GROUP BY e.departement, e.groupe
+        ORDER BY e.departement, nb_etablissements DESC
+    """
+    return query_db(sql, tuple(params))
 # ---------------------------------------------------------------------------
 # Point d'entrée
 # ---------------------------------------------------------------------------

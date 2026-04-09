@@ -56,8 +56,8 @@ def run_pipeline(force_download: bool = False):
     # ------------------------------------------------------------------
     logger.info("\n[2/3] NETTOYAGE ET PRÉPARATION")
     try:
-        import prepare as _prep
-        importlib.reload(_prep)
+        from prepare import prepare
+        prepare()   # appel direct et propre
         logger.info("  → CSV exportés dans data/processed/")
     except Exception as e:
         logger.error(f"Erreur lors de la préparation : {e}")

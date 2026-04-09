@@ -40,8 +40,8 @@ SOURCES = {
     #    "description": "FINESS équipements sociaux et médico-sociaux",
     #    "min_rows": 50000,
     #}, ne fonctionne pas actuellement
-    "v_commune_2025.csv": {
-        "url": "https://www.insee.fr/fr/statistiques/fichier/8377162/v_commune_2025.csv",
+    "communes-france-2025.csv": {
+        "url": "https://www.data.gouv.fr/api/1/datasets/r/f5df602b-3800-44d7-b2df-fa40a0350325",
         "description": "Communes françaises 2025 (INSEE)",
         "min_rows": 30000,
     },

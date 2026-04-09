@@ -68,7 +68,8 @@ CREATE TABLE IF NOT EXISTS etablissements (
     latitude            REAL,
     nom_commune         TEXT,
     population          INTEGER,
-    region              TEXT DEFAULT 'Occitanie'
+    region              TEXT DEFAULT 'Occitanie',
+    groupe              TEXT
 );
 
 -- Table des équipements sociaux (détail)

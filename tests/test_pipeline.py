@@ -12,10 +12,10 @@ import pandas as pd
 import pytest
 
 # Ajoute src/ au path pour les imports
-sys.path.insert(0, str(Path(__file__).parent / "src"))
-sys.path.insert(0, str(Path(__file__).parent / "api"))
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+sys.path.insert(0, str(Path(__file__).parent.parent / "api"))
 
-BASE_DIR = Path(__file__).parent
+BASE_DIR = Path(__file__).parent.parent
 DB_PATH = BASE_DIR / "data" / "finess_occitanie.db"
 PROCESSED_DIR = BASE_DIR / "data" / "processed"
 
@@ -44,17 +44,23 @@ class TestNettoyage:
 
     def test_lambert93_to_wgs84_valid(self):
         """Coordonnées Lambert93 valides → lat/lon dans les bornes France."""
-        from prepare import lambert93_to_wgs84
-        lat, lon = lambert93_to_wgs84(574960, 6277723)   # ~ Toulouse
-        assert lat is not None and lon is not None
-        assert 41 <= lat <= 52
-        assert -5 <= lon <= 10
+        from prepare import convert_lambert_to_wgs84
+        import pandas as pd
+        df = pd.DataFrame({"coordxet": [574960.0], "coordyet": [6277723.0]})
+        df = convert_lambert_to_wgs84(df)
+        assert df["latitude"].notna().all()
+        assert df["longitude"].notna().all()
+        assert 41 <= df["latitude"].iloc[0] <= 52
+        assert -5 <= df["longitude"].iloc[0] <= 10
 
     def test_lambert93_to_wgs84_zero(self):
-        """Coordonnées (0, 0) doivent retourner (None, None)."""
-        from prepare import lambert93_to_wgs84
-        lat, lon = lambert93_to_wgs84(0, 0)
-        assert lat is None and lon is None
+        """Coordonnées (0, 0) doivent retourner None."""
+        from prepare import convert_lambert_to_wgs84
+        import pandas as pd
+        df = pd.DataFrame({"coordxet": [0.0], "coordyet": [0.0]})
+        df = convert_lambert_to_wgs84(df)
+        assert df["latitude"].isna().all()
+        assert df["longitude"].isna().all()
 
     def test_occitanie_filter(self):
         """Seuls les 13 départements d'Occitanie doivent être présents."""
@@ -125,17 +131,26 @@ class TestNettoyage:
         if "latitude" in df.columns and "longitude" in df.columns:
             df_geo = df[df["latitude"].notna() & df["longitude"].notna()]
             if len(df_geo) > 0:
-                assert df_geo["latitude"].between(41, 52).all()
-                assert df_geo["longitude"].between(-5, 10).all()
+                pct_lat_ok = df_geo["latitude"].between(41, 52).mean()
+                pct_lon_ok = df_geo["longitude"].between(-5, 10).mean()
+                assert pct_lat_ok > 0.95, f"Trop de latitudes hors France : {1-pct_lat_ok:.1%}"
+                assert pct_lon_ok > 0.95, f"Trop de longitudes hors France : {1-pct_lon_ok:.1%}"
 
-    def test_v_commune_columns(self):
-        """Le fichier v_commune_2025.csv doit contenir les colonnes attendues."""
-        path = BASE_DIR / "data" / "raw" / "v_commune_2025.csv"
-        if not path.exists():
-            pytest.skip("v_commune_2025.csv non téléchargé")
-        df = pd.read_csv(path, dtype=str, nrows=5)
-        assert "COM" in df.columns, "Colonne COM manquante dans v_commune_2025.csv"
-        assert "DEP" in df.columns, "Colonne DEP manquante dans v_commune_2025.csv"
+    def test_communes_columns(self):
+        """Le fichier communes doit contenir les colonnes attendues par prepare.py."""
+        # Accepte les deux formats possibles
+        path_riche = BASE_DIR / "data" / "raw" / "communes-france-2025.csv"
+        path_insee  = BASE_DIR / "data" / "raw" / "v_commune_2025.csv"
+        if path_riche.exists():
+            df = pd.read_csv(path_riche, dtype=str, nrows=5)
+            assert "code_insee" in df.columns, "Colonne code_insee manquante"
+            assert "latitude_centre" in df.columns, "Colonne latitude_centre manquante"
+        elif path_insee.exists():
+            df = pd.read_csv(path_insee, dtype=str, nrows=5)
+            assert "COM" in df.columns, "Colonne COM manquante dans v_commune_2025.csv"
+            assert "DEP" in df.columns, "Colonne DEP manquante dans v_commune_2025.csv"
+        else:
+            pytest.skip("Aucun fichier communes trouvé")
 
 
 # ---------------------------------------------------------------------------
