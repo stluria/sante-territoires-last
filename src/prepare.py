@@ -216,7 +216,7 @@ def prepare() -> pd.DataFrame:
     df_etab = df_etab.drop_duplicates()
     df_etab["departement"] = df_etab["departement"].apply(clean_department)
     df_etab["commune"]     = df_etab["commune"].astype("Int64").astype(str).str.zfill(3)
-    df["groupe"] = df["libcategetab"].apply(regrouper_categorie)
+    df_etab["groupe"] = df_etab["libcategetab"].apply(regrouper_categorie)
 
     # Nettoyage équipements sociaux
     df_equi["groupe_equipement"] = df_equi["libde"].apply(regrouper_equipement)

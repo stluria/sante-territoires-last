@@ -48,7 +48,7 @@ SOURCES = {
 }
 
 # ---------------------------------------------------------------------------
-# Logging
+# Logging - chaque execution crée un nouveau fichier de log
 # ---------------------------------------------------------------------------
 
 log_file = LOG_DIR / f"collect_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
@@ -69,7 +69,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 def compute_md5(filepath: Path) -> str:
-    """Calcule le MD5 d'un fichier pour vérifier son intégrité."""
+    """Calcule le MD5 d'un fichier pour vérifier son intégrité. Le MD5 est une empreinte numérique du fichier — si un seul octet change, le hash change complètement."""
     hasher = hashlib.md5()
     with open(filepath, "rb") as f:
         for chunk in iter(lambda: f.read(8192), b""):

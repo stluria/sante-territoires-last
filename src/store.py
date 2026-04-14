@@ -46,78 +46,85 @@ SQL_SCHEMA = """
 -- Table principale : établissements Occitanie
 CREATE TABLE IF NOT EXISTS etablissements (
     nofinesset          TEXT PRIMARY KEY,
-    nofinessej          TEXT,
-    rs                  TEXT,
-    rslongue            TEXT,
-    departement         TEXT NOT NULL,
-    libdepartement      TEXT,
-    commune             TEXT,
-    code_insee          TEXT,
-    libcategetab        TEXT,
-    libcategagretab     TEXT,
-    numvoie             TEXT,
-    typvoie             TEXT,
-    voie                TEXT,
-    compvoie            TEXT,
-    complrs             TEXT,
-    compldistrib        TEXT,
-    lieuditbp           TEXT,
-    coordxet            REAL,
-    coordyet            REAL,
-    longitude           REAL,
-    latitude            REAL,
-    nom_commune         TEXT,
-    population          INTEGER,
-    region              TEXT DEFAULT 'Occitanie',
-    groupe              TEXT
-);
+        nofinessej          TEXT,
+            rs                  TEXT,
+                rslongue            TEXT,
+                    departement         TEXT NOT NULL,
+                        libdepartement      TEXT,
+                            commune             TEXT,
+                                code_insee          TEXT,
+                                    libcategetab        TEXT,
+                                        libcategagretab     TEXT,
+                                            numvoie             TEXT,
+                                                typvoie             TEXT,
+                                                    voie                TEXT,
+                                                        compvoie            TEXT,
+                                                            complrs             TEXT,
+                                                                compldistrib        TEXT,
+                                                                    lieuditbp           TEXT,
+                                                                        coordxet            REAL,
+                                                                            coordyet            REAL,
+                                                                                longitude           REAL,
+                                                                                    latitude            REAL,
+                                                                                        nom_commune         TEXT,
+                                                                                            population          INTEGER,
+                                                                                                region              TEXT DEFAULT 'Occitanie',
+                                                                                                    groupe              TEXT
+                                                                                                    );
 
--- Table des équipements sociaux (détail)
-CREATE TABLE IF NOT EXISTS equipements (
-    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
-    nofinesset          TEXT NOT NULL,
-    nofinessej          TEXT,
-    libde               TEXT,
-    libta               TEXT,
-    libclient           TEXT,
-    capinstot           REAL,
-    groupe_equipement   TEXT,
-    departement         TEXT,
-    libdepartement      TEXT,
-    commune             TEXT,
-    code_insee          TEXT,
-    latitude            REAL,
-    longitude           REAL,
-    FOREIGN KEY (nofinesset) REFERENCES etablissements(nofinesset)
-);
+                                                                                                    -- Table des équipements sociaux (détail)
+                                                                                                    CREATE TABLE IF NOT EXISTS equipements (
+                                                                                                        id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+                                                                                                            nofinesset          TEXT NOT NULL,
+                                                                                                                nofinessej          TEXT,
+                                                                                                                    libde               TEXT,
+                                                                                                                        libta               TEXT,
+                                                                                                                            libclient           TEXT,
+                                                                                                                                capinstot           REAL,
+                                                                                                                                    groupe_equipement   TEXT,
+                                                                                                                                        departement         TEXT,
+                                                                                                                                            libdepartement      TEXT,
+                                                                                                                                                commune             TEXT,
+                                                                                                                                                    code_insee          TEXT,
+                                                                                                                                                        latitude            REAL,
+                                                                                                                                                            longitude           REAL,
+                                                                                                                                                                FOREIGN KEY (nofinesset) REFERENCES etablissements(nofinesset)
+                                                                                                                                                                );
 
--- Table des activités de soins (détail)
-CREATE TABLE IF NOT EXISTS activites (
-    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
-    nofinesset          TEXT NOT NULL,
-    nofinessej          TEXT,
-    rsej                TEXT,
-    libactivite         TEXT,
-    libmodalite         TEXT,
-    libforme            TEXT,
-    datefin             TEXT,
-    groupe_activites    TEXT,
-    departement         TEXT,
-    libdepartement      TEXT,
-    commune             TEXT,
-    code_insee          TEXT,
-    latitude            REAL,
-    longitude           REAL,
-    FOREIGN KEY (nofinesset) REFERENCES etablissements(nofinesset)
-);
+                                                                                                                                                                -- Table des activités de soins (détail)
+                                                                                                                                                                CREATE TABLE IF NOT EXISTS activites (
+                                                                                                                                                                    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+                                                                                                                                                                        nofinesset          TEXT NOT NULL,
+                                                                                                                                                                            nofinessej          TEXT,
+                                                                                                                                                                                rsej                TEXT,
+                                                                                                                                                                                    libactivite         TEXT,
+                                                                                                                                                                                        libmodalite         TEXT,
+                                                                                                                                                                                            libforme            TEXT,
+                                                                                                                                                                                                datefin             TEXT,
+                                                                                                                                                                                                    groupe_activites    TEXT,
+                                                                                                                                                                                                        departement         TEXT,
+                                                                                                                                                                                                            libdepartement      TEXT,
+                                                                                                                                                                                                                commune             TEXT,
+                                                                                                                                                                                                                    code_insee          TEXT,
+                                                                                                                                                                                                                        latitude            REAL,
+                                                                                                                                                                                                                            longitude           REAL,
+                                                                                                                                                                                                                                FOREIGN KEY (nofinesset) REFERENCES etablissements(nofinesset)
+                                                                                                                                                                                                                                );
 
--- Table de référence des départements
-CREATE TABLE IF NOT EXISTS ref_departements (
-    code_dept   TEXT PRIMARY KEY,
-    nom_dept    TEXT NOT NULL,
-    region      TEXT DEFAULT 'Occitanie'
-);
-"""
+                                                                                                                                                                                                                                -- Table de référence des départements
+                                                                                                                                                                                                                                CREATE TABLE IF NOT EXISTS ref_departements (
+                                                                                                                                                                                                                                    code_dept   TEXT PRIMARY KEY,
+                                                                                                                                                                                                                                        nom_dept    TEXT NOT NULL,
+                                                                                                                                                                                                                                            region      TEXT DEFAULT 'Occitanie'
+                                                                                                                                                                                                                                            );
+
+                                                                                                                                                                                                                                            -- Table population par départements
+                                                                                                                                                                                                                                            CREATE TABLE IF NOT EXISTS pop_departements (
+                                                                                                                                                                                                                                                code_dept   TEXT PRIMARY KEY,
+                                                                                                                                                                                                                                                    population  INTEGER NOT NULL
+                                                                                                                                                                                                                                                    );
+                                                                                                                                                                                                                                                    """
+
 
 SQL_INDEXES = """
 CREATE INDEX IF NOT EXISTS idx_etab_dept       ON etablissements(departement);
@@ -158,6 +165,34 @@ def insert_ref_departements(conn: sqlite3.Connection):
     conn.commit()
     logger.info(f"  ✓ {len(DEPARTEMENTS_OCCITANIE)} départements insérés")
 
+
+
+def insert_population_departements(conn: sqlite3.Connection):
+    path = DB_PATH.parent.parent / "data" / "raw" / "communes-france-2025.csv"
+    
+    if not path.exists():
+        logger.warning(f"  ⚠ {path} absent")
+        return
+
+    occ = {"09","11","12","30","31","32","34","46","48","65","66","81","82"}
+    df = pd.read_csv(path, low_memory=False, encoding="utf-8")
+    
+    # Forcer dep_code en string après lecture
+    df["dep_code"] = df["dep_code"].astype(str).str.strip().str.zfill(2)
+    
+    df_occ = df[df["dep_code"].isin(occ)]
+    logger.info(f"  Lignes Occitanie trouvées : {len(df_occ)}")
+    
+    pop = df_occ.groupby("dep_code")["population"].sum().reset_index()
+    pop.columns = ["code_dept", "population"]
+
+    conn.execute("DELETE FROM pop_departements")
+    conn.executemany(
+        "INSERT INTO pop_departements (code_dept, population) VALUES (?, ?)",
+        pop.itertuples(index=False, name=None)
+    )
+    conn.commit()
+    logger.info(f"  ✓ population : {len(pop)} départements insérés")
 
 def load_and_insert(conn: sqlite3.Connection):
     """Charge les CSV nettoyés (data/processed/) et les insère dans SQLite."""
@@ -233,6 +268,7 @@ def store():
         create_schema(conn)
         insert_ref_departements(conn)
         load_and_insert(conn)
+        insert_population_departements(conn)
         run_validation_queries(conn)
         logger.info(f"\n✓ Base créée : {DB_PATH} ({DB_PATH.stat().st_size / 1024:.1f} Ko)")
     except Exception as e:
