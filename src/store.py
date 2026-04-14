@@ -46,84 +46,80 @@ SQL_SCHEMA = """
 -- Table principale : établissements Occitanie
 CREATE TABLE IF NOT EXISTS etablissements (
     nofinesset          TEXT PRIMARY KEY,
-        nofinessej          TEXT,
-            rs                  TEXT,
-                rslongue            TEXT,
-                    departement         TEXT NOT NULL,
-                        libdepartement      TEXT,
-                            commune             TEXT,
-                                code_insee          TEXT,
-                                    libcategetab        TEXT,
-                                        libcategagretab     TEXT,
-                                            numvoie             TEXT,
-                                                typvoie             TEXT,
-                                                    voie                TEXT,
-                                                        compvoie            TEXT,
-                                                            complrs             TEXT,
-                                                                compldistrib        TEXT,
-                                                                    lieuditbp           TEXT,
-                                                                        coordxet            REAL,
-                                                                            coordyet            REAL,
-                                                                                longitude           REAL,
-                                                                                    latitude            REAL,
-                                                                                        nom_commune         TEXT,
-                                                                                            population          INTEGER,
-                                                                                                region              TEXT DEFAULT 'Occitanie',
-                                                                                                    groupe              TEXT
-                                                                                                    );
-
-                                                                                                    -- Table des équipements sociaux (détail)
-                                                                                                    CREATE TABLE IF NOT EXISTS equipements (
-                                                                                                        id                  INTEGER PRIMARY KEY AUTOINCREMENT,
-                                                                                                            nofinesset          TEXT NOT NULL,
-                                                                                                                nofinessej          TEXT,
-                                                                                                                    libde               TEXT,
-                                                                                                                        libta               TEXT,
-                                                                                                                            libclient           TEXT,
-                                                                                                                                capinstot           REAL,
-                                                                                                                                    groupe_equipement   TEXT,
-                                                                                                                                        departement         TEXT,
-                                                                                                                                            libdepartement      TEXT,
-                                                                                                                                                commune             TEXT,
-                                                                                                                                                    code_insee          TEXT,
-                                                                                                                                                        latitude            REAL,
-                                                                                                                                                            longitude           REAL,
-                                                                                                                                                                FOREIGN KEY (nofinesset) REFERENCES etablissements(nofinesset)
-                                                                                                                                                                );
-
-                                                                                                                                                                -- Table des activités de soins (détail)
-                                                                                                                                                                CREATE TABLE IF NOT EXISTS activites (
-                                                                                                                                                                    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
-                                                                                                                                                                        nofinesset          TEXT NOT NULL,
-                                                                                                                                                                            nofinessej          TEXT,
-                                                                                                                                                                                rsej                TEXT,
-                                                                                                                                                                                    libactivite         TEXT,
-                                                                                                                                                                                        libmodalite         TEXT,
-                                                                                                                                                                                            libforme            TEXT,
-                                                                                                                                                                                                datefin             TEXT,
-                                                                                                                                                                                                    groupe_activites    TEXT,
-                                                                                                                                                                                                        departement         TEXT,
-                                                                                                                                                                                                            libdepartement      TEXT,
-                                                                                                                                                                                                                commune             TEXT,
-                                                                                                                                                                                                                    code_insee          TEXT,
-                                                                                                                                                                                                                        latitude            REAL,
-                                                                                                                                                                                                                            longitude           REAL,
-                                                                                                                                                                                                                                FOREIGN KEY (nofinesset) REFERENCES etablissements(nofinesset)
-                                                                                                                                                                                                                                );
-
-                                                                                                                                                                                                                                -- Table de référence des départements
-                                                                                                                                                                                                                                CREATE TABLE IF NOT EXISTS ref_departements (
-                                                                                                                                                                                                                                    code_dept   TEXT PRIMARY KEY,
-                                                                                                                                                                                                                                        nom_dept    TEXT NOT NULL,
-                                                                                                                                                                                                                                            region      TEXT DEFAULT 'Occitanie'
-                                                                                                                                                                                                                                            );
-
-                                                                                                                                                                                                                                            -- Table population par départements
-                                                                                                                                                                                                                                            CREATE TABLE IF NOT EXISTS pop_departements (
-                                                                                                                                                                                                                                                code_dept   TEXT PRIMARY KEY,
-                                                                                                                                                                                                                                                    population  INTEGER NOT NULL
-                                                                                                                                                                                                                                                    );
-                                                                                                                                                                                                                                                    """
+    nofinessej          TEXT,
+    rs                  TEXT,
+    rslongue            TEXT,
+    departement         TEXT NOT NULL,
+    libdepartement      TEXT,
+    commune             TEXT,
+    code_insee          TEXT,
+    libcategetab        TEXT,
+    libcategagretab     TEXT,
+    numvoie             TEXT,
+    typvoie             TEXT,
+    voie                TEXT,
+    compvoie            TEXT,
+    complrs             TEXT,
+    compldistrib        TEXT,
+    lieuditbp           TEXT,
+    coordxet            REAL,
+    coordyet            REAL,
+    longitude           REAL,
+    latitude            REAL,
+    nom_commune         TEXT,
+    population          INTEGER,
+    region              TEXT DEFAULT 'Occitanie',
+    groupe              TEXT
+    );
+-- Table des équipements sociaux (détail)
+CREATE TABLE IF NOT EXISTS equipements (
+    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    nofinesset          TEXT NOT NULL,
+    nofinessej          TEXT,
+    libde               TEXT,
+    libta               TEXT,
+    libclient           TEXT,
+    capinstot           REAL,
+    groupe_equipement   TEXT,
+    departement         TEXT,
+    libdepartement      TEXT,
+    commune             TEXT,
+    code_insee          TEXT,
+    latitude            REAL,
+    longitude           REAL,
+    FOREIGN KEY (nofinesset) REFERENCES etablissements(nofinesset)
+);
+-- Table des activités de soins (détail)
+CREATE TABLE IF NOT EXISTS activites (
+    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    nofinesset          TEXT NOT NULL,
+    nofinessej          TEXT,
+    rsej                TEXT,
+    libactivite         TEXT,
+    libmodalite         TEXT,
+    libforme            TEXT,
+    datefin             TEXT,
+    groupe_activites    TEXT,
+    departement         TEXT,
+    libdepartement      TEXT,
+    commune             TEXT,
+    code_insee          TEXT,
+    latitude            REAL,
+    longitude           REAL,
+FOREIGN KEY (nofinesset) REFERENCES etablissements(nofinesset)
+);
+-- Table de référence des départements
+CREATE TABLE IF NOT EXISTS ref_departements (
+    code_dept   TEXT PRIMARY KEY,
+    nom_dept    TEXT NOT NULL,
+    region      TEXT DEFAULT 'Occitanie'
+    );
+ -- Table population par départements
+CREATE TABLE IF NOT EXISTS pop_departements (
+    code_dept   TEXT PRIMARY KEY,
+    population  INTEGER NOT NULL
+    );
+    """
 
 
 SQL_INDEXES = """

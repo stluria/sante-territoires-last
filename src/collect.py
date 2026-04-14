@@ -95,7 +95,7 @@ def download_file(url: str, dest: Path, timeout: int = 60) -> bool:
 
         total = int(response.headers.get("content-length", 0))
         downloaded = 0
-
+        #pour télécharger 8ko par 8ko : 
         with open(dest, "wb") as f:
             for chunk in response.iter_content(chunk_size=8192):
                 if chunk:
