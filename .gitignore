@@ -39,3 +39,9 @@ Thumbs.db
 .pytest_cache/
 .coverage
 htmlcov/
+
+# ── Autres ───────────────────────────────────────────────────
+*.log
+*.bak
+*.tmp
+*.Zone.Identifier
