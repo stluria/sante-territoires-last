@@ -4,6 +4,9 @@ data/processed/
 data/*.db
 logs/
 
+# ── google  ──────────────────────────────────────────────────
+/google-cloud-sdk/
+/[B/google-cloud-sdk/
 # ── Python ───────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
