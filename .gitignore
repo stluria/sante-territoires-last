@@ -5,8 +5,9 @@ data/*.db
 logs/
 
 # ── google  ──────────────────────────────────────────────────
-/google-cloud-sdk/
-/[B/google-cloud-sdk/
+google-cloud-sdk/
+''$'\033''[B'/
+gcloud_config/
 # ── Python ───────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
