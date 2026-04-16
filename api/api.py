@@ -313,7 +313,7 @@ def get_stats_region():
     """)
     equipements = query_db("SELECT COUNT(*) as total_equipements FROM equipements")
     activites = query_db("SELECT COUNT(*) as total_soins FROM activites")
-    population = query_db("SELECT SUM(population) as population_occitanie FROM pop_departements")
+    population = query_db("SELECT SUM(population) as population_occitanie FROM departements")
     return {
         **etablissement[0],
         **equipements[0],
@@ -346,7 +346,7 @@ def get_stats_departements(
         FROM etablissements e
         LEFT JOIN equipements eq ON e.nofinesset = eq.nofinesset
         LEFT JOIN activites ac ON e.nofinesset = ac.nofinesset
-        LEFT JOIN pop_departements p ON e.departement = p.code_dept
+        LEFT JOIN departements p ON e.departement = p.code_dept
         {condition}
         GROUP BY e.departement
         ORDER BY nb_etablissements DESC

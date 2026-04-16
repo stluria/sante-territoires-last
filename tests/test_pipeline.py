@@ -168,7 +168,7 @@ class TestStockage:
         conn = sqlite3.connect(DB_PATH)
         tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
         conn.close()
-        assert {"etablissements", "equipements", "activites", "ref_departements"} <= tables
+        assert {"etablissements", "equipements", "activites", "departements"} <= tables
 
     def test_etablissements_count(self):
         if not DB_PATH.exists():
@@ -215,7 +215,7 @@ class TestStockage:
         if not DB_PATH.exists():
             pytest.skip("Base non créée")
         conn = sqlite3.connect(DB_PATH)
-        count = conn.execute("SELECT COUNT(*) FROM ref_departements").fetchone()[0]
+        count = conn.execute("SELECT COUNT(*) FROM departements").fetchone()[0]
         conn.close()
         assert count == 13, f"Attendu 13 départements, trouvé {count}"
 

@@ -109,16 +109,13 @@ CREATE TABLE IF NOT EXISTS activites (
 FOREIGN KEY (nofinesset) REFERENCES etablissements(nofinesset)
 );
 -- Table de référence des départements
-CREATE TABLE IF NOT EXISTS ref_departements (
+CREATE TABLE IF NOT EXISTS departements (
     code_dept   TEXT PRIMARY KEY,
     nom_dept    TEXT NOT NULL,
+    population  INTEGER,
     region      TEXT DEFAULT 'Occitanie'
     );
- -- Table population par départements
-CREATE TABLE IF NOT EXISTS pop_departements (
-    code_dept   TEXT PRIMARY KEY,
-    population  INTEGER NOT NULL
-    );
+ 
     """
 
 
@@ -152,43 +149,31 @@ def create_schema(conn: sqlite3.Connection):
     conn.commit()
     logger.info("  ✓ Tables et index créés")
 
-
-def insert_ref_departements(conn: sqlite3.Connection):
-    conn.executemany(
-        "INSERT OR REPLACE INTO ref_departements (code_dept, nom_dept) VALUES (?, ?)",
-        DEPARTEMENTS_OCCITANIE,
-    )
-    conn.commit()
-    logger.info(f"  ✓ {len(DEPARTEMENTS_OCCITANIE)} départements insérés")
-
-
-
-def insert_population_departements(conn: sqlite3.Connection):
+def insert_departements(conn: sqlite3.Connection):
     path = DB_PATH.parent.parent / "data" / "raw" / "communes-france-2025.csv"
-    
-    if not path.exists():
-        logger.warning(f"  ⚠ {path} absent")
-        return
-
     occ = {"09","11","12","30","31","32","34","46","48","65","66","81","82"}
-    df = pd.read_csv(path, low_memory=False, encoding="utf-8")
-    
-    # Forcer dep_code en string après lecture
-    df["dep_code"] = df["dep_code"].astype(str).str.strip().str.zfill(2)
-    
-    df_occ = df[df["dep_code"].isin(occ)]
-    logger.info(f"  Lignes Occitanie trouvées : {len(df_occ)}")
-    
-    pop = df_occ.groupby("dep_code")["population"].sum().reset_index()
-    pop.columns = ["code_dept", "population"]
 
-    conn.execute("DELETE FROM pop_departements")
+    pop_by_dept = {}
+    if path.exists():
+        df = pd.read_csv(path, low_memory=False, encoding="utf-8")
+        df["dep_code"] = df["dep_code"].astype(str).str.strip().str.zfill(2)
+        df_occ = df[df["dep_code"].isin(occ)]
+        pop_by_dept = df_occ.groupby("dep_code")["population"].sum().to_dict()
+        logger.info(f"  Lignes Occitanie trouvées : {len(df_occ)}")
+    else:
+        logger.warning(f"  ⚠ {path} absent, population non renseignée")
+
+    rows = [
+        (code, nom, pop_by_dept.get(code))
+        for code, nom in DEPARTEMENTS_OCCITANIE
+    ]
     conn.executemany(
-        "INSERT INTO pop_departements (code_dept, population) VALUES (?, ?)",
-        pop.itertuples(index=False, name=None)
+        "INSERT OR REPLACE INTO departements (code_dept, nom_dept, population) VALUES (?, ?, ?)",
+        rows,
     )
     conn.commit()
-    logger.info(f"  ✓ population : {len(pop)} départements insérés")
+    logger.info(f"  ✓ {len(rows)} départements insérés (avec population)")
+
 
 def load_and_insert(conn: sqlite3.Connection):
     """Charge les CSV nettoyés (data/processed/) et les insère dans SQLite."""
@@ -262,9 +247,8 @@ def store():
 
     try:
         create_schema(conn)
-        insert_ref_departements(conn)
+        insert_departements(conn)
         load_and_insert(conn)
-        insert_population_departements(conn)
         run_validation_queries(conn)
         logger.info(f"\n✓ Base créée : {DB_PATH} ({DB_PATH.stat().st_size / 1024:.1f} Ko)")
     except Exception as e:
