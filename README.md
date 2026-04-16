@@ -34,7 +34,7 @@ finess_occitanie/
 |--------|----------------|--------|-------------|
 | `finess_equipements_sociaux.csv` | 109 365 lignes | data.gouv.fr | Équipements sociaux et médico-sociaux, capacités |
 | `finess_activites_soin.csv` | 10 291 lignes | data.gouv.fr | Activités de soins autorisées par établissement |
-| `finess_etablissement_incomplet.xlsx` | 102 553 lignes | local | Établissements géographiques (adresse, statut, type) |
+| `finess_etablissement.txt` | 102 553 lignes | local | Établissements géographiques (adresse, statut, type) |
 | `v_commune_2025.csv` | 37 548 lignes | data.gouv.fr / INSEE | Référentiel communes 2025 |
 
 > **Note** : Le fichier établissements présent en ligne présente une erreur d'architecture ; le fichier local est utilisé à la place.
@@ -75,8 +75,8 @@ La base SQLite (`finess_occitanie.db`) contient 5 tables :
 | `etablissements` | Table centrale, 1 ligne par établissement Occitanie | `nofinesset` |
 | `equipements` | Détail des équipements sociaux (N:1 → etablissements) | `nofinesset` |
 | `activites` | Détail des activités de soins (N:1 → etablissements) | `nofinesset` |
-| `ref_departements` | Référentiel des 13 départements d'Occitanie | `code_dept` |
-| `pop_departements` | Population par département | `code_dept` |
+| `departements` | Référentiel des 13 départements d'Occitanie | `code_dept` |
+
 
 Index créés pour la performance :
 ```sql
@@ -120,6 +120,7 @@ export FINESS_API_KEY=votre-cle-secrete
 | `/etablissements/{nofinesset}` | GET | Détail d'un établissement + équipements + activités |
 | `/stats/region` | GET | Statistiques agrégées région Occitanie |
 | `/stats/departements` | GET | Statistiques par département |
+| `/stats/communes` | GET | Statistiques par commune |
 | `/activites/top` | GET | Top activités de soins les plus fréquentes |
 
 ### Filtres disponibles sur `/etablissements`
